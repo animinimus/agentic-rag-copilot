@@ -25,19 +25,19 @@ class GradeDocuments(BaseModel):
 def get_llm():
     """Initialize the chat model from application settings."""
     settings = get_settings()
+    if settings.groq_api_key:
+        return ChatGroq(
+            model="openai/gpt-oss-120b",
+            api_key=settings.groq_api_key,
+            temperature=0,
+        )
     if settings.openai_api_key:
         return ChatOpenAI(
             model=settings.openai_model,
             api_key=settings.openai_api_key,
             temperature=0,
         )
-    if settings.groq_api_key:
-        return ChatGroq(
-            model="llama-3.3-70b-versatile",
-            api_key=settings.groq_api_key,
-            temperature=0,
-        )
-    raise ValueError("Missing LLM API key: configure OPENAI_API_KEY or GROQ_API_KEY.")
+    raise ValueError("Missing LLM API key: configure GROQ_API_KEY or OPENAI_API_KEY.")
 
 
 def retrieve(state: AgentState) -> Dict[str, Any]:
