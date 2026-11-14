@@ -9,6 +9,7 @@ from app.core.config import get_settings
 
 
 def get_embeddings() -> OpenAIEmbeddings:
+    """Initialize and return the OpenAI embeddings model based on app settings."""
     settings = get_settings()
     return OpenAIEmbeddings(
         model=settings.embedding_model,
@@ -17,6 +18,7 @@ def get_embeddings() -> OpenAIEmbeddings:
 
 
 def get_vectorstore() -> PineconeVectorStore:
+    """Connect to the Pinecone index and return a vector store interface."""
     settings = get_settings()
     pc = Pinecone(api_key=settings.pinecone_api_key)
     index = pc.Index(settings.pinecone_index_name)
@@ -28,11 +30,13 @@ def get_vectorstore() -> PineconeVectorStore:
 
 
 def index_documents(documents: List[Document]) -> List[str]:
+    """Embed and upsert document chunks into the Pinecone index."""
     vectorstore = get_vectorstore()
     return vectorstore.add_documents(documents)
 
 
 def get_retriever() -> VectorStoreRetriever:
+    """Return a retriever instance configured for top-k similarity search."""
     settings = get_settings()
     vectorstore = get_vectorstore()
     return vectorstore.as_retriever(
